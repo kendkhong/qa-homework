@@ -3,11 +3,11 @@ defmodule HomeworkTest do
   use Hound.Helpers
   use ExUnit.Case
   import IO
-  import Finch
   import QaHomework.LocatePageHeaderText
   import QaHomework.LocatePageSubheaderText
   import QaHomework.LocateFlashMessagesText
-  import QaHomework.Constants
+  import QaHomework.MyClient
+  alias QaHomework.Constants
 
   # Start hound session and destroy when tests are run
   hound_session()
@@ -30,8 +30,8 @@ defmodule HomeworkTest do
 
     # Verify form input
     loginform = find_element(:id, "login") 
-    find_within_element(loginform, :id, "username") |> fill_field(valid_username())
-    find_within_element(loginform, :id, "password") |> fill_field(valid_password()) 
+    find_within_element(loginform, :id, "username") |> fill_field(Constants.valid_username())
+    find_within_element(loginform, :id, "password") |> fill_field(Constants.valid_password()) 
     :timer.sleep(2000)
     take_screenshot("test/ui/screenshots/filloutform_success.png")
     
@@ -62,8 +62,8 @@ defmodule HomeworkTest do
 
     # Verify invalid form input
     loginform = find_element(:id, "login") 
-    find_within_element(loginform, :id, "username") |> fill_field(Enum.random(invalid_username()))
-    find_within_element(loginform, :id, "password") |> fill_field(Enum.random(invalid_password()))
+    find_within_element(loginform, :id, "username") |> fill_field(Enum.random(Constants.invalid_username()))
+    find_within_element(loginform, :id, "password") |> fill_field(Enum.random(Constants.invalid_password()))
     :timer.sleep(2000)
     take_screenshot("test/ui/screenshots/filloutform_unsuccess.png")
 
@@ -117,24 +117,6 @@ defmodule HomeworkTest do
   ##############################################################################
   ## Building and testing a simple API call here
   ##############################################################################
-
-  defp build_request(path) do
-    request_url = "https://the-internet.herokuapp.com/#{path}"
-    build(:get, request_url, [{"Content-Type", "application/json"}]) |> request(MyFinch)
-
-  end
-
-  defp parse_response({:ok, %Finch.Response{status: 200, body: body}}) do
-    Jason.decode(body)
-    #{:ok, %{"status" => 200}}
-  end
-
-  defp parse_response({:ok, %Finch.Response{status: error_code, body: body}}) do
-    {:error, {:http, error_code, body}}
-  end
-
-  defp parse_response({:error, _exception} = error), do: error
-
   test "Verify API call and response" do
     build_request("status_codes/200")
     |> parse_response()
