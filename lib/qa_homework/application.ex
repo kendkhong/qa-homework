@@ -10,6 +10,8 @@ defmodule QaHomework.Application do
     children = [
       # Starts a worker by calling: MyDemo.Worker.start_link(arg)
       # {MyDemo.Worker, arg}
+      {Finch, name: MyFinch}
+      
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
