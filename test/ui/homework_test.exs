@@ -2,6 +2,7 @@ defmodule HomeworkTest do
   # Import helpers
   use Hound.Helpers
   use ExUnit.Case
+  import IO
   import QaHomework.LocatePageHeaderText
   import QaHomework.LocatePageSubheaderText
   import QaHomework.LocateFlashMessagesText
@@ -73,13 +74,44 @@ defmodule HomeworkTest do
     assert visible_text(find_within_element(element, :id, "flash")) == "Your username is invalid!\n×"
     take_screenshot("test/ui/screenshots/loginfailure_success.png")
 
-
-
-
-
-
-
-  
   end
+
+  test "Verify JS Alert dialog" do
+    navigate_to("https://the-internet.herokuapp.com/javascript_alerts",5)
+
+    find_element(:xpath, ~s|//*[@onclick="jsAlert()"]|) |> click() 
+    :timer.sleep(2000)
+    puts dialog_text()
+    assert dialog_text() == "I am a JS Alert"
+    accept_dialog()
+    take_screenshot("test/ui/screenshots/jsalertpop_success.png")
+
+  end
+
+  test "Verify JS Prompt dialog" do
+    navigate_to("https://the-internet.herokuapp.com/javascript_alerts",5)
+
+    find_element(:xpath, ~s|//*[@onclick="jsPrompt()"]|) |> click() 
+    :timer.sleep(3000)
+    puts dialog_text()
+    assert dialog_text() == "I am a JS prompt"
+    input_into_prompt("Ken Khong")
+    accept_dialog()
+    take_screenshot("test/ui/screenshots/jsprompt_success.png")
+
+  end
+  test "Verify checkbox" do
+    navigate_to("https://the-internet.herokuapp.com/checkboxes",5)
+
+    form = find_element(:id, "checkboxes")
+    enabledcheckbox1 = find_within_element(form, :tag, "input")
+    click(enabledcheckbox1)
+    assert element_enabled?(enabledcheckbox1)
+    disabledcheckbox1 = find_within_element(form, :xpath, ~s|//*[@type="checkbox"]|)
+    click(disabledcheckbox1)
+    take_screenshot("test/ui/screenshots/checkbox_success.png")    
+
+  end
+
 
 end
