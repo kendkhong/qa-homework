@@ -126,6 +126,7 @@ defmodule HomeworkTest do
 
   defp parse_response({:ok, %Finch.Response{status: 200, body: body}}) do
     Jason.decode(body)
+    #{:ok, %{"status" => 200}}
   end
 
   defp parse_response({:ok, %Finch.Response{status: error_code, body: body}}) do
@@ -137,7 +138,9 @@ defmodule HomeworkTest do
   test "Verify API call and response" do
     build_request("status_codes/200")
     |> parse_response()
-
+    |> case do
+      error ->
+        error
+    end
   end
-
 end
